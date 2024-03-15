@@ -1,0 +1,117 @@
+<html>
+	<head>
+	<TITLE> ECMWF SURFACE+WTEM 00z </TITLE>
+	
+	<style>
+		a:link {color:blue; text-decoration:none}
+		a:visited {color:blue; text-decoration:none}
+		a:active {color:#029D18; text-decoration:none}
+	</style>
+
+	<script language = "JavaScript">
+
+	SOURCE_PATH = "http://wiss.hq.af.mil/" //"http://172.16.200.40"
+	//불러올 이미지가 있는 사이트의 주소
+	
+	var time //시간
+
+	var today //오늘
+	var date //일
+	var month //달
+	var year //년
+
+	var prev_day //어제
+	var prev_date //전날
+	var prev_month //전달
+	var prev_year //전년
+	current = 0;
+
+	//시간 체크, 변수에 값 초기화
+	function TimeCheck()
+	{
+		today = new Date();
+		time = today.getHours();
+		year = today.getFullYear();
+		month = (((today.getMonth()+1)<10) ? "0" : "" ) + (today.getMonth()+1) // 한자리수를 0x로 두자리수를 xx로 표현 ex) 3월은 03, 11월은 11
+		date = (((today.getDate())<10) ? "0" : "") + (today.getDate())
+	
+		prev_day = new Date(year, month-1, date-1);
+		prev_date = (((prev_day.getDate())<10) ? "0" : "") + (prev_day.getDate())
+		prev_month = (((prev_day.getMonth()+1)<10) ? "0" : "") + (prev_day.getMonth()+1)
+		prev_year = prev_day.getFullYear();
+	}
+	
+	//불러올 이미지의 주소를 정하는 함수
+	function urlset(arg)
+	{
+		point = arg.toString().padStart(3, '0')
+		var table1_begin = "<table style=\"float: left\"><tbody>
+		var table2_end = "</tbody></table><br>"
+		var url_path = SOURCE_PATH + "/img/KMA/ECMWF/" + prev_year + prev_month + prev_date + "/ecmw_lc40_asia_surfce_s" + point + "_" + prev_date + prev_month + prev_date + "12.gif"
+		
+		var url_path1 = SOURCE_PATH + "/img/KMA/ECMWF/" + prev_year + prev_month + prev_date + "/ecmw_lc20_wtem_wt92_s" + point + "_" + prev_date + prev_month + prev_date + "12.gif"
+		var url_path2 = SOURCE_PATH + "/img/KMA/ECMWF/" + prev_year + prev_month + prev_date + "/ecmw_lc20_wtem_wt85_s" + point + "_" + prev_date + prev_month + prev_date + "12.gif"
+		var url_path3 = SOURCE_PATH + "/img/KMA/ECMWF/" + prev_year + prev_month + prev_date + "/ecmw_lc20_wtem_wt70_s" + point + "_" + prev_date + prev_month + prev_date + "12.gif"
+		var url_path4 = SOURCE_PATH + "/img/KMA/ECMWF/" + prev_year + prev_month + prev_date + "/ecmw_lc20_wtem_wt50_s" + point + "_" + prev_date + prev_month + prev_date + "12.gif"
+		
+		var url_path5 = SOURCE_PATH + "/img/KMA/ECMWF/" + prev_year + prev_month + prev_date + "/ecmw_lc40_asia_asia_gph500_s" + point + "_" + prev_date + prev_month + prev_date + "12.gif"
+		var url_path6 = SOURCE_PATH + "/img/KMA/ECMWF/" + prev_year + prev_month + prev_date + "/ecmw_lc40_asia_asia_gph850_s" + point + "_" + prev_date + prev_month + prev_date + "12.gif"
+		
+		return table1_begin + "<tr><th><img id='sfc' src=" + url_path + " width=1050 height=770 SCROLLING=No NORESIZE></iframe></th></tr>" //한반도 일기도
+			+ "<tr><th>" +
+			"<img src=" + url_path1 + " width=260 height=300 SCROLLING=No NORESIZE></ifame>" + // 920에서 바람, 기압
+			"<img src=" + url_path2 + " width=260 height=300 SCROLLING=No NORESIZE></ifame>" + // 850에서 바람, 기압
+			"<img src=" + url_path3 + " width=260 height=300 SCROLLING=No NORESIZE></ifame>" + // 700에서 바람, 기압
+			"<img src=" + url_path4 + " width=260 height=300 SCROLLING=No NORESIZE></ifame>" + // 500에서 바람, 기압
+			"</th></tr></tbody></table><table><tbody><tr><th>" + //첫번째 테이블 끝(왼쪽), 두번째 테이블(오른쪽) 시작
+			"<img src=" + url_path5 + " width=800 height=530 SCROLLING=No NORESIZE></ifame>" +
+			"</tr></th><tr><th>" + 
+			"<img src=" + url_path6 + " width=800 height=530 SCROLLING=No NORESIZE></ifame>" + 
+			"</th></tr><tr height=80></tr>" +
+			table2_end
+	}
+	
+	//화면에 시간대별로 몇 개 표시할건지 계산하는 함수
+	function display()
+	{
+		TimeCheck()
+	
+		var url = ""
+		for (var i=0; i<=28; i++)
+			url += urlset(i*3);
+		for (var i=15; i<=16; i++)
+			url += urlset(i*6);
+		for (var i=9; i<=20; i++)
+			url +=urlset(i*12);
+		paper.innerHTML = url
+	}
+
+	//방향키 동작
+	document.onkeydown=function(event)
+	{if(event.key=='ArrowDown') {current++;} if(event.key=='ArrowRight') {current++;}
+	 if(event.key=='ArrowLeft') {current--;} if(event.key=='ArrowUp') {current--;}
+	 if(current<0) {current=0;} if(current>42) {current=42;}
+	 document.querySelectorAll('img').item(current).scrollIntoView();}
+
+	//마우스 동작
+	document.onmousewheel=function(event)
+	{if(event.deltaY>0) {current++;} else {current--;}
+	 if(current<0) {current=0;} if(current>42) {current=42;}
+	 document.querySelectorAll('img').item(current).scrollIntoView();}
+
+	//스크롤 동작
+	document.onscroll=function(event)
+	{document.querySelectorAll("img[id='sfc']").item(current).scrollIntoView();}
+
+	</script>
+	</head>
+	<body bgcolor = white>
+	<body onLoad = "display()">
+	<font face = "휴먼모음T">
+	<TD nowrap><A HREF = "javascript:location.reload()"> [Reloaded] </A></TD></font>
+	<center><font color=black size=7><b>오늘 00z</b></font></center>
+	<layer name = "paper">
+	<div id="paper"></div>
+	</layer>
+	</body>
+</html>
