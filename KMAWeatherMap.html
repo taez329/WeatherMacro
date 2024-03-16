@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+	<TITLE> ECMWF SURFACE+WTEM 00z </TITLE>
+	
+	<style>
+		a:link {color:blue; text-decoration:none}
+		a:visited {color:blue; text-decoration:none}
+		a:active {color:#029D18; text-decoration:none}
+	</style>
+
+	<script language = "JavaScript">
+
+	SOURCE_PATH1 = "https://afso.kma.go.kr/afsOut/rsw/cht/retChtFctImgView.kfrm?cmdType=VIEW&typSub=0&typSubTwo=0%236%233%23%2FDATA%2FCHT%2FKIMG%2F%23%2Fkim_gdps" // 방재정보기상시스템, 일기도
+	SOURCE_PATH2 = "https://afso.kma.go.kr/afsOut/rsw/cht/retChtFctImgView.kfrm?cmdType=VIEW&typSub=5&typSubTwo=0%236%233%23%2FDATA%2FCHT%2FKIMG%2F%23%2Fkim_gdps" // 방재정보기상시스템, 바람기온
+	//불러올 이미지가 있는 사이트의 주소
+	
+	var time //시간
+
+	var today //오늘
+	var date //일
+	var month //달
+	var year //년
+
+	var prev_day //어제
+	var prev_date //전날
+	var prev_month //전달
+	var prev_year //전년
+	current = 0;
+
+	//시간 체크, 변수에 값 초기화
+	function TimeCheck()
+	{
+		today = new Date();
+		time = today.getHours();
+		year = today.getFullYear();
+		month = (((today.getMonth()+1)<10) ? "0" : "" ) + (today.getMonth()+1) // 한자리수를 0x로 두자리수를 xx로 표현 ex) 3월은 03, 11월은 11
+		date = (((today.getDate())<10) ? "0" : "") + (today.getDate())
+	
+		prev_day = new Date(year, month-1, date-1);
+		prev_date = (((prev_day.getDate())<10) ? "0" : "") + (prev_day.getDate())
+		prev_month = (((prev_day.getMonth()+1)<10) ? "0" : "") + (prev_day.getMonth()+1)
+		prev_year = prev_day.getFullYear();
+	}
+	
+	//불러올 이미지의 주소를 정하는 함수
+	function urlset(arg)
+	{
+		point = arg.toString().padStart(3, '0') //sxxx에 들어갈 xxx의 시간대를 최소 3자리로 변환, arg 매개변수로 받은 시간을 최소 3자리로 변경
+		var table1_begin = "<table style=\"float: left\"><tbody>"
+		var table2_end = "</tbody></table><br>"
+		var url_path = SOURCE_PATH1 + "_erly_asia_surfce_ft06_pa4_&tm=/DATA/CHT/KIMG/" + prev_year + prev_month + "/" + prev_date + 
+			"/kim_gdps_erly_asia_surfce_ft06_pa4_s" + point + "_" + prev_year + prev_month + prev_date + "06.png"
+		
+		var url_path1 = SOURCE_PATH2 + "_lc40_wtem_wt92_&tm=/DATA/CHT/KIMG/" + prev_year + prev_month + "/" + prev_date + 
+			"/kim_gdps_lc40_wtem_wt92_s" + point + "_" + prev_year + prev_month + prev_date + "06.png"
+		var url_path2 = SOURCE_PATH2 + "_lc40_wtem_wt85_&tm=/DATA/CHT/KIMG/" + prev_year + prev_month + "/" + prev_date + 
+			"/kim_gdps_lc40_wtem_wt85_s" + point + "_" + prev_year + prev_month + prev_date + "06.png"
+		var url_path3 = SOURCE_PATH2 + "_lc40_wtem_wt70_&tm=/DATA/CHT/KIMG/" + prev_year + prev_month + "/" + prev_date + 
+			"/kim_gdps_lc40_wtem_wt70_s" + point + "_" + prev_year + prev_month + prev_date + "06.png"
+		var url_path4 = SOURCE_PATH2 + "_lc40_wtem_wt50_&tm=/DATA/CHT/KIMG/" + prev_year + prev_month + "/" + prev_date + 
+			"/kim_gdps_lc40_wtem_wt50_s" + point + "_" + prev_year + prev_month + prev_date + "06.png"
+		
+		var url_path5 = SOURCE_PATH1 + "_erly_asia_gph500_ft06_pa4_&tm=/DATA/CHT/KIMG/" + prev_year + prev_month + "/" + prev_date + 
+			"/kim_gdps_erly_asia_gph500_ft06_pa4_s" + point + "_" + prev_year + prev_month + prev_date + "06.png"
+		var url_path6 = SOURCE_PATH1 + "_erly_asia_gph850_ft06_pa4_&tm=/DATA/CHT/KIMG/" + prev_year + prev_month + "/" + prev_date + 
+			"/kim_gdps_erly_asia_gph850_ft06_pa4_s" + point + "_" + prev_year + prev_month + prev_date + "06.png"
+		
+		return table1_begin + "<tr><th><img id='sfc' src=" + url_path + " width=1050 height=770 SCROLLING=No NORESIZE></iframe></th></tr>" //한반도 일기도
+			+ "<tr><th>" +
+			"<img src=" + url_path1 + " width=260 height=300 SCROLLING=No NORESIZE></ifame>" + // 925에서 바람, 기압
+			"<img src=" + url_path2 + " width=260 height=300 SCROLLING=No NORESIZE></ifame>" + // 850에서 바람, 기압
+			"<img src=" + url_path3 + " width=260 height=300 SCROLLING=No NORESIZE></ifame>" + // 700에서 바람, 기압
+			"<img src=" + url_path4 + " width=260 height=300 SCROLLING=No NORESIZE></ifame>" + // 500에서 바람, 기압
+			"</th></tr></tbody></table><table><tbody><tr><th>" + //첫번째 테이블 끝(왼쪽), 두번째 테이블(오른쪽) 시작
+			"<img src=" + url_path5 + " width=800 height=530 SCROLLING=No NORESIZE></ifame>" +
+			"</tr></th><tr><th>" + 
+			"<img src=" + url_path6 + " width=800 height=530 SCROLLING=No NORESIZE></ifame>" + 
+			"</th></tr><tr height=80></tr>" +
+			table2_end
+	}
+	
+	//화면에 시간대별로 몇 개 표시할건지 계산하는 함수
+	function display()
+	{
+		TimeCheck()
+	
+		var url = ""
+		for (var i=0; i<=28; i++)
+			url += urlset(i*3); // 3시간 간격으로 표시
+		for (var i=15; i<=16; i++)
+			url += urlset(i*6); // 6시간 간격으로 표시
+		for (var i=9; i<=20; i++)
+			url +=urlset(i*12); // 12시간 간격으로 표시
+		paper.innerHTML = url
+	}
+
+	//방향키 동작
+	document.onkeydown=function(event)
+	{if(event.key=='ArrowDown') {current++;} if(event.key=='ArrowRight') {current++;}
+	 if(event.key=='ArrowLeft') {current--;} if(event.key=='ArrowUp') {current--;}
+	 if(current<0) {current=0;} if(current>42) {current=42;} // 생성되는 이미지의 총 개수가 43개이기에 경계 설정
+	 document.querySelectorAll('img').item(current).scrollIntoView();}
+
+	//마우스 동작
+	document.onmousewheel=function(event)
+	{if(event.deltaY>0) {current++;} else {current--;}
+	 if(current<0) {current=0;} if(current>42) {current=42;}  // 생성되는 이미지의 총 개수가 43개이기에 경계 설정
+	 document.querySelectorAll('img').item(current).scrollIntoView();}
+
+	//스크롤 동작
+	document.onscroll=function(event)
+	{document.querySelectorAll("img[id='sfc']").item(current).scrollIntoView();}
+
+	</script>
+	</head>
+	<body bgcolor = white>
+	<body onLoad = "display()">
+	<font face = "휴먼모음T">
+	<TD nowrap><A HREF = "javascript:location.reload()"> [Reloaded] </A></TD></font>
+	<center><font color=black size=7><b>오늘 00z</b></font></center>
+	<layer name = "paper">
+	<div id="paper"></div>
+	</layer>
+	</body>
+</html>
